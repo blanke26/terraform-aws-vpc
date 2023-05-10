@@ -4,7 +4,7 @@ variable "cidr" {
 
 variable "public_subnets" {
   description = "List of public subnets"
-  type        = "list"
+  type        = list(string)
 }
 
 variable "private_subnets" {
