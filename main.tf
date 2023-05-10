@@ -9,7 +9,7 @@ variable "public_subnets" {
 
 variable "private_subnets" {
   description = "List of private subnets"
-  type        = "list"
+  type        = list(string)
 }
 
 variable "environment" {
@@ -18,7 +18,7 @@ variable "environment" {
 
 variable "availability_zones" {
   description = "List of availability zones"
-  type        = "list"
+  type        = list(string)
 }
 
 variable "name" {
