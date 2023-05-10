@@ -100,7 +100,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = "${merge(var.tags, var.vpc_tags, map("Name", format("%s", var.name), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, var.vpc_tags, tomap({"Name", format("%s", var.name), "Environment", "${var.environment}"}))}"
 }
 
 /**
@@ -110,7 +110,7 @@ resource "aws_vpc" "main" {
 resource "aws_internet_gateway" "main" {
   vpc_id = "${aws_vpc.main.id}"
 
-  tags = "${merge(var.tags, map("Name", format("%s", var.name), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, tomap({"Name", format("%s", var.name), "Environment", "${var.environment}"}))}"
 }
 
 resource "aws_nat_gateway" "main" {
@@ -120,7 +120,7 @@ resource "aws_nat_gateway" "main" {
   subnet_id     = "${element(aws_subnet.public.*.id, count.index)}"
   depends_on    = ["aws_internet_gateway.main"]
 
-  tags = "${merge(var.tags, map("Name", format("%s", var.name), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, tomap({"Name", format("%s", var.name), "Environment", "${var.environment}"}))}"
 }
 
 resource "aws_eip" "nat" {
@@ -131,7 +131,7 @@ resource "aws_eip" "nat" {
 
   vpc = true
 
-  tags = "${merge(var.tags, map("Name", format("%s-%03d", var.name, element(var.availability_zones, count.index)), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, tomap({"Name", format("%s-%03d", var.name, element(var.availability_zones, count.index)), "Environment", "${var.environment}"}))}"
 }
 
 resource "aws_security_group" "nat_instances" {
@@ -163,7 +163,7 @@ resource "aws_security_group" "nat_instances" {
 
   vpc_id = "${aws_vpc.main.id}"
 
-  tags = "${merge(var.tags, map("Name", format("%s-nat-instance", var.name), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, tomap({"Name", format("%s-nat-instance", var.name), "Environment", "${var.environment}"}))}"
 }
 
 resource "aws_instance" "nat_instance" {
@@ -221,7 +221,7 @@ resource "aws_subnet" "public" {
   count                   = "${length(var.public_subnets)}"
   map_public_ip_on_launch = true
 
-  tags = "${merge(var.tags, var.public_subnet_tags, map("Name", format("%s-public-%03d", var.name, count.index+1), "Environment", "${var.environment}"))}"
+  tags = "${merge(var.tags, var.public_subnet_tags, tomap({"Name", format("%s-public-%03d", var.name, count.index+1), "Environment", "${var.environment}"}))}"
 }
 
 /**
@@ -231,7 +231,7 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   vpc_id = "${aws_vpc.main.id}"
 
-  tags = "${merge(var.tags, var.public_route_table_tags, map("Name", format("%s-public-001", var.name), "Environment", var.environment))}"
+  tags = "${merge(var.tags, var.public_route_table_tags, tomap({"Name", format("%s-public-001", var.name), "Environment", var.environment}))}"
 }
 
 resource "aws_route" "public" {
@@ -244,7 +244,7 @@ resource "aws_route_table" "private" {
   count  = "${length(var.private_subnets)}"
   vpc_id = "${aws_vpc.main.id}"
 
-  tags = "${merge(var.tags, var.public_route_table_tags, map("Name", format("%s-private-%03d", var.name, count.index+1), "Environment", var.environment))}"
+  tags = "${merge(var.tags, var.public_route_table_tags, tomap({"Name", format("%s-private-%03d", var.name, count.index+1), "Environment", var.environment}))}"
 }
 
 resource "aws_route" "private" {
